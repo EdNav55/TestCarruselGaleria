@@ -1,19 +1,27 @@
-const cuadros = document.querySelectorAll(`.contenedor-cuadros div`);
 const btnAnterior = document.querySelector(`#retroceder`);
 const btnSiguiente = document.querySelector(`#avanzar`);
 const contenedorGaleria = document.querySelector(`.contenedor-cuadros`);
+const parteVisible = document.querySelector(`.prueba`);
 
 let desplazamiento = 0;
 let intervaloDesplazamiento;
-const velocidadDesplazamiento = 10;
+const velocidadDesplazamiento = 3;
 
 function actualizarDesplazamiento(direccion) {
-    imagenes.forEach(img => {
-        const currentTranslateX = parseFloat(img.style.transform.replace('translateX(', '').replace('px)', '') || 0);
-        img.style.transform = `translateX(${currentTranslateX + direccion}px)`;
-    });
-}
+    const contenedorRect = contenedorGaleria.getBoundingClientRect();
+    const visibleRect = parteVisible.getBoundingClientRect();
 
+    const currentTranslateX = parseFloat(contenedorGaleria.style.transform.replace('translateX(', '').replace('px)', '') || 0);
+
+    const dentroLimites =
+        !(contenedorRect.left + direccion > visibleRect.left + 8 || contenedorRect.right + direccion < visibleRect.right - 8);
+
+    if (dentroLimites) {
+        contenedorGaleria.style.transform = `translateX(${currentTranslateX + direccion}px)`;
+    } else {
+        detenerDesplazamiento();
+    }
+}
 function iniciarDesplazamiento(direccion) {
     clearInterval(intervaloDesplazamiento);
     intervaloDesplazamiento = setInterval(() => {
@@ -44,13 +52,3 @@ btnSiguiente.addEventListener("mousedown", () => {
 btnSiguiente.addEventListener("mouseup", detenerDesplazamiento);
 
 btnSiguiente.addEventListener("mouseleave", detenerDesplazamiento);
-
-// function cambioImagen() {
-//     const contenedorGaleria = document.getElementById(`galeria_puertas`);
-//     const primerHijo = contenedorGaleria.children[1];
-//     const ultimoHijo = contenedorGaleria.children[6];
-
-//     console.log(contenedorGaleria.offsetWidth);
-//     console.log(primerHijo.offsetWidth);
-//     primerHijo.style.transform = `translateX(${contenedorGaleria.offsetWidth}px)`;
-// }
